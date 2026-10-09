@@ -1,13 +1,18 @@
 FROM php:8.1-apache
 
-# Instalacja narzędzi, rozszerzeń PHP oraz włączenie modułów Apache
-RUN apt-get update && apt-get install -y curl tar libpng-dev libjpeg-dev libfreetype6-dev && \
+# Instalacja narzędzi, rozszerzeń PHP, Composera oraz włączenie modułów Apache
+RUN apt-get update && apt-get install -y curl tar unzip git libpng-dev libjpeg-dev libfreetype6-dev && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install pdo pdo_mysql mysqli gd && \
-    a2enmod rewrite dir
+    a2enmod rewrite dir && \
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Pobranie i rozpakowanie oficjalnego kodu Gibbon v27.0.00 z repozytorium
+# Pobranie i rozpakowanie oficjalnego kodu Gibbon v27.0.00
 RUN curl -L https://github.com/GibbonEdu/core/archive/refs/tags/v27.0.00.tar.gz | tar -xz --strip-components=1 -C /var/www/html/
+
+# Instalacja zależności przez Composer
+WORKDIR /var/www/html
+RUN composer install --no-dev --optimize-autoloader
 
 # Kopiowanie plików konfiguracyjnych i bazy z repozytorium do kontenera
 COPY config.php /var/www/html/config.php
