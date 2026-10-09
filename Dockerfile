@@ -1,6 +1,6 @@
 FROM php:8.1-apache
 
-# Instalacja rozszerzeń i klienta mysql
+# Instalacja rozszerzeń PHP oraz klienta MySQL do importu gibbon.sql
 RUN apt-get update && apt-get install -y default-mysql-client && docker-php-ext-install pdo pdo_mysql mysqli
 
 COPY . /var/www/html/
