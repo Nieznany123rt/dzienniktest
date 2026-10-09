@@ -1,6 +1,6 @@
 FROM php:8.1-apache
 
-# Instalacja wymaganych rozszerzeń PHP oraz narzędzi
+# Instalacja zależności systemowych i rozszerzeń PHP
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -10,17 +10,20 @@ RUN apt-get update && apt-get install -y \
     unzip \
     curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd mysqli pdo pdo_mysql zip
+    && docker-php-ext-install gd mysqli pdo pdo_mysql zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Włączenie mod_rewrite dla Apache
+# Włączenie mod_rewrite
 RUN a2enmod rewrite
 
-# Pobranie i rozpakowanie najnowszej wersji Gibbona
+# Pobranie i rozpakowanie Gibbona
 WORKDIR /var/www/html
 RUN curl -L -o gibbon.zip https://github.com/GibbonEdu/core/archive/refs/tags/v27.0.00.zip \
     && unzip gibbon.zip \
-    && mv core-27.0.00/* . \
+    && cp -r core-27.0.00/* . \
     && rm -rf core-27.0.00 gibbon.zip \
     && chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
+
+CMD ["apache2-foreground"]
