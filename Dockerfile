@@ -32,3 +32,4 @@ RUN curl -L -o gibbon.zip https://github.com/GibbonEdu/core/archive/refs/tags/v2
 EXPOSE 80
 
 CMD ["apache2-foreground"]
+RUN rm -f /var/www/html/config.php
