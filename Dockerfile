@@ -1,6 +1,6 @@
 FROM php:8.1-apache
 
-# Instalacja zależności systemowych i rozszerzeń PHP
+# Instalacja zależności systemowych, rozszerzeń PHP oraz Composera
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -9,18 +9,22 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     curl \
+    git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd mysqli pdo pdo_mysql zip \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Włączenie mod_rewrite
 RUN a2enmod rewrite
 
-# Pobranie i rozpakowanie oficjalnego wydania Gibbona (z gotowym folderem vendor)
+# Pobranie kodu Gibbona i wygenerowanie folderu vendor przez Composer
 WORKDIR /var/www/html
-RUN curl -L -o gibbon.zip https://github.com/GibbonEdu/core/releases/download/v27.0.00/GibbonEduCore-v27.0.00.zip \
+RUN curl -L -o gibbon.zip https://github.com/GibbonEdu/core/archive/refs/tags/v27.0.00.zip \
     && unzip gibbon.zip \
-    && rm gibbon.zip \
+    && cp -r core-27.0.00/* . \
+    && rm -rf core-27.0.00 gibbon.zip \
+    && composer install --no-dev --optimize-autoloader \
     && chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
