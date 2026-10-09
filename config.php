@@ -1,12 +1,17 @@
 <?php
-$dbo['server']   = getenv('MYSQLHOST');
-$dbo['port']     = getenv('MYSQLPORT');
-$dbo['username'] = getenv('MYSQLUSER');
-$dbo['password'] = getenv('MYSQLPASSWORD');
-$dbo['db']       = getenv('MYSQLDATABASE');
+// Automatyczne pobieranie danych konfiguracyjnych z Render Environment Variables (Aiven MySQL)
+$databaseServer = getenv('MYSQLHOST') ?: 'localhost';
+$databasePort = getenv('MYSQLPORT') ?: '3306';
+$databaseName = getenv('MYSQLDATABASE') ?: 'defaultdb';
+$databaseUsername = getenv('MYSQLUSER') ?: 'root';
+$databasePassword = getenv('MYSQLPASSWORD') ?: '';
 
-$guid         = 'dziennik-szkolny-2026';
-$absolutePath = '/var/www/html';
-$absoluteURL  = 'https://core-sn0q.onrender.com';
-$systemIsLive = 'Y';
-?>
+// Konfiguracja bazy danych Gibbon
+$databaseType = 'mysql';
+$absoluteURL = 'https://core-sn0q.onrender.com';
+$installType = 'Production';
+
+// Włączenie obsługi certyfikatu SSL dla Aiven (wymagane przez zewnętrzne połączenie)
+$databasePdoOptions = [
+    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+];
