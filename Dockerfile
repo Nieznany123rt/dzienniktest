@@ -16,12 +16,11 @@ RUN apt-get update && apt-get install -y \
 # Włączenie mod_rewrite
 RUN a2enmod rewrite
 
-# Pobranie i rozpakowanie Gibbona
+# Pobranie i rozpakowanie oficjalnego wydania Gibbona (z gotowym folderem vendor)
 WORKDIR /var/www/html
-RUN curl -L -o gibbon.zip https://github.com/GibbonEdu/core/archive/refs/tags/v27.0.00.zip \
+RUN curl -L -o gibbon.zip https://github.com/GibbonEdu/core/releases/download/v27.0.00/GibbonEduCore-v27.0.00.zip \
     && unzip gibbon.zip \
-    && cp -r core-27.0.00/* . \
-    && rm -rf core-27.0.00 gibbon.zip \
+    && rm gibbon.zip \
     && chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
