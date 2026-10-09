@@ -1,15 +1,13 @@
 FROM php:8.1-apache
 
-# Instalacja narzędzi, rozszerzeń PHP i włączenie modułów Apache
-RUN apt-get update && apt-get install -y wget unzip libpng-dev libjpeg-dev libfreetype6-dev && \
+# Instalacja narzędzi, rozszerzeń PHP oraz włączenie modułów Apache
+RUN apt-get update && apt-get install -y curl tar libpng-dev libjpeg-dev libfreetype6-dev && \
     docker-php-ext-configure gd --with-freetype --with-jpeg && \
     docker-php-ext-install pdo pdo_mysql mysqli gd && \
     a2enmod rewrite dir
 
-# Pobranie i rozpakowanie oficjalnej paczki Gibbon v27.0.00 do /var/www/html
-RUN wget https://github.com/GibbonEdu/core/releases/download/v27.0.00/Gibbonv27.0.00.zip -O /tmp/gibbon.zip && \
-    unzip /tmp/gibbon.zip -d /var/www/html/ && \
-    rm /tmp/gibbon.zip
+# Pobranie i rozpakowanie oficjalnego kodu Gibbon v27.0.00 z repozytorium
+RUN curl -L https://github.com/GibbonEdu/core/archive/refs/tags/v27.0.00.tar.gz | tar -xz --strip-components=1 -C /var/www/html/
 
 # Kopiowanie plików konfiguracyjnych i bazy z repozytorium do kontenera
 COPY config.php /var/www/html/config.php
